@@ -1,0 +1,24 @@
+{
+  "baseURL": "https://tryon-listing.vercel.app",
+  "viewport": "1920x1080",
+  "mobile": "390x844",
+  "mode": "demo",
+  "checks": [
+    "consent gate",
+    "three-model generation",
+    "session usage",
+    "product page generation",
+    "shopper try-on",
+    "content download",
+    "upload invalidation",
+    "photo clearing",
+    "escaped product text",
+    "mobile overflow",
+    "no page errors",
+    "no failed requests",
+    "mocked live photo consent",
+    "mocked live deletion retry and clear authorization"
+  ],
+  "result": "pass",
+  "liveProviderTested": false
+}

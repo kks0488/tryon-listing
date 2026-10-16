@@ -1,0 +1,16 @@
+{
+  "name": "tryon-listing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Virtual try-on storefronts for small fashion sellers",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "capture": "node scripts/capture.mjs"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "license": "MIT"
+}
