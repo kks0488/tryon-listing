@@ -10,6 +10,11 @@ export async function generateListing(raw, { env = process.env, fetchImpl = fetc
   const input = productInput(raw);
   if (!env.LLM_API_KEY) return { mode: 'demo', bundle: demoListing(raw) };
   const messages = buildMessages(input);
-  const text = await callLLM({ provider: 'nebius', apiKey: env.LLM_API_KEY, baseUrl: env.LLM_BASE_URL || 'https://api.tokenfactory.nebius.com/v1/', model: env.LLM_MODEL || 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B', ...messages, fetchImpl, timeoutMs: 45000, maxTokens: 4500 });
-  return { mode: 'live', bundle: parseBundle(text) };
+  let result;
+  try {
+    result = await callLLM({ provider: 'nebius', apiKey: env.LLM_API_KEY, baseUrl: env.LLM_BASE_URL || 'https://api.tokenfactory.nebius.com/v1/', model: env.LLM_MODEL || 'nvidia/Nemotron-3_5-Lightning', ...messages, detailed: true, fetchImpl, timeoutMs: 45000, maxTokens: 4500 });
+    return { mode: 'live', bundle: parseBundle(result.text), usage: result.usage };
+  } catch {
+    return { mode: 'demo', bundle: demoListing(raw), usage: result?.usage || null, notice: 'Live copy was unavailable or invalid. Showing deterministic demo copy; no live result is claimed.' };
+  }
 }

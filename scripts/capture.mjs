@@ -3,6 +3,61 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const baseURL = process.env.BASE_URL || 'http://127.0.0.1:3087';
+if (process.env.LIVE_CAPTURE === '1') {
+  let access = ''; for await (const chunk of process.stdin) access += chunk; access = access.trim();
+  assert.ok(access, 'Provide studio access over stdin only.');
+  const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE, headless: true });
+  const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  const page = await context.newPage(), errors = [], usage = [];
+  const results = { baseURL, viewport: '1920x1080', mode: 'live', liveProviderTested: true, source: 'Owned original SVG artwork rasterized to PNG; no real person', vtoAttempts: 0 };
+  page.on('pageerror', () => errors.push('Browser runtime error'));
+  page.on('response', async response => {
+    if (response.url().endsWith('/api/listing')) { const data = await response.json(); results.copyMode = data.mode; if (data.usage) usage.push(data.usage); }
+    if (response.url().endsWith('/api/finish')) { const data = await response.json(); results.providerDeleted = data.deleted; }
+  });
+  await mkdir('media', { recursive: true });
+  try {
+    // Capture original neutral placeholders directly from our own vector assets.
+    const asset = await context.newPage();
+    await asset.goto(baseURL + '/assets/model-a.svg');
+    const person = await asset.locator('svg').screenshot();
+    await asset.goto(baseURL + '/assets/garment.svg');
+    const garment = await asset.locator('svg').screenshot(); await asset.close();
+    await page.goto(baseURL);
+    await page.waitForFunction(() => document.querySelector('#mode').textContent.includes('Live'));
+    await page.locator('#access-toggle').click(); await page.locator('#access').fill(access);
+    await page.getByRole('button', { name: 'Use for this session' }).click(); access = '';
+    for (const [id, buffer] of [['garment', garment], ['person', person]]) {
+      await page.locator('#' + id).setInputFiles({ name: 'owned-placeholder.png', mimeType: 'image/png', buffer });
+      await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('Photo ready'));
+    }
+    await page.screenshot({ path: 'media/01-studio.png' });
+    await page.locator('#seller-consent').check();
+    results.vtoAttempts = 1;
+    await page.locator('#generate').click();
+    await page.waitForFunction(() => !document.querySelector('#generate').disabled, null, { timeout: 410000 });
+    results.vtoWorked = await page.locator('#previews .look-badge').count() === 1;
+    results.vtoStatus = await page.locator('#status').innerText();
+    results.publishedUnits = await page.locator('#units').innerText();
+    await page.locator('#studio').scrollIntoViewIfNeeded(); await page.screenshot({ path: 'media/02-collection.png' });
+    await page.getByRole('button', { name: 'Shopper preview', exact: true }).click();
+    await page.locator('#write-listing').click();
+    await page.waitForFunction(() => !document.querySelector('#write-listing').disabled, null, { timeout: 55000 });
+    await page.locator('#storefront').scrollIntoViewIfNeeded(); await page.screenshot({ path: 'media/03-storefront.png' });
+    await page.locator('#shopper-form').scrollIntoViewIfNeeded(); await page.screenshot({ path: 'media/04-shopper-consent.png' });
+    await page.getByRole('button', { name: 'Content kit', exact: true }).click();
+    await page.evaluate(() => scrollTo(0, document.querySelector('#content').offsetTop - 24)); await page.screenshot({ path: 'media/05-content-kit.png' });
+    results.copyNotice = await page.locator('#copy-mode').innerText();
+    results.usage = usage; results.errors = errors;
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
+    const phone = await mobile.newPage(); await phone.goto(baseURL); await phone.waitForFunction(() => document.querySelector('#mode').textContent.includes('Live'));
+    await phone.screenshot({ path: 'media/06-mobile.png', fullPage: true }); await mobile.close();
+    await writeFile('media/capture-results.json', JSON.stringify(results, null, 2) + '\n');
+    console.log(JSON.stringify(results));
+    assert.deepEqual(errors, []); assert.equal(results.copyMode, 'live');
+  } finally { await context.close(); await browser.close(); }
+  process.exit(0);
+}
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_EXECUTABLE ? { executablePath: process.env.CHROMIUM_EXECUTABLE } : {}) });
 const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
 const page = await context.newPage();

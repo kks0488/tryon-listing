@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let config = { mode: 'demo', copyMode: 'demo' }, access = '', garment = null, person = null, shopper = null, bundle = null, generation = 0, units = 0, unknownUnits = false, busy = false;
+let config = { mode: 'demo', copyMode: 'demo' }, copyResultMode = 'demo', access = '', garment = null, person = null, shopper = null, bundle = null, generation = 0, units = 0, unknownUnits = false, busy = false;
 let images = [], tokens = new Set(), epoch = 0;
 const photoVersion = { garment: 0, person: 0, 'shopper-photo': 0 };
 function invalidate() {
@@ -109,14 +109,14 @@ function renderContent() {
 }
 async function write(target) {
   if (busy) return; locked(true); status('content-status', 'Writing from your confirmed product facts…'); status('status', 'Preparing your content kit…');
-  try { const result = await api('listing', { name: $('product-name').value, facts: $('facts').value }); bundle = result.bundle; renderContent(); $('copy-mode').textContent = `${result.mode === 'demo' ? 'Deterministic demo copy · no LLM call' : 'Live LLM copy · check every claim'} · seller review required`; status('content-status', 'Content kit ready for review. Verify all product claims before publishing.'); status('status', 'Product page and content kit ready for review.'); tab(target); }
+  try { const result = await api('listing', { name: $('product-name').value, facts: $('facts').value }); bundle = result.bundle; copyResultMode = result.mode; renderContent(); $('copy-mode').textContent = `${result.notice || (result.mode === 'demo' ? 'Deterministic demo copy' : 'Live LLM copy · check every claim')} · seller review required`; status('content-status', result.notice || 'Content kit ready for review. Verify all product claims before publishing.'); status('status', result.notice || 'Product page and content kit ready for review.'); tab(target); }
   catch (error) { status('content-status', error.message, true); status('status', error.message, true); }
   finally { locked(false); }
 }
 $('write-listing').onclick = () => write('storefront'); $('write-content').onclick = () => write('content');
 $('download').onclick = () => {
   if (!bundle) return status('content-status', 'Generate your content kit first.', true);
-  const url = URL.createObjectURL(new Blob([JSON.stringify({ disclosure: 'Seller review required. Visual try-on does not predict physical fit.', copyMode: config.copyMode, ...bundle }, null, 2)], { type: 'application/json' }));
+  const url = URL.createObjectURL(new Blob([JSON.stringify({ disclosure: 'Seller review required. Visual try-on does not predict physical fit.', copyMode: copyResultMode, ...bundle }, null, 2)], { type: 'application/json' }));
   const a = document.createElement('a'); a.href = url; a.download = 'tryon-listing-content.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 $('clear').onclick = async () => {

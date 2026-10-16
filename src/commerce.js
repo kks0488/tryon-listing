@@ -1,7 +1,7 @@
 // Reused from our MIT commerce-content-engine/src/core.js. Copyright (c) 2026 Kyoungsoo Kim.
 // Shared, dependency-free core. No DOM or Node APIs.
 export const PROVIDERS = {
-  nebius: { model: 'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B', baseUrl: 'https://api.tokenfactory.nebius.com/v1/' },
+  nebius: { model: 'nvidia/Nemotron-3_5-Lightning', baseUrl: 'https://api.tokenfactory.nebius.com/v1/' },
   openai: { model: 'gpt-5-mini', baseUrl: 'https://api.openai.com/v1' },
   anthropic: { model: 'claude-opus-5-5' },
   gemini: { model: 'gemini-2.5-flash' },
@@ -90,9 +90,14 @@ export function jsonObject(text) {
   throw new Error('Could not read a JSON content bundle. Ask the model to return the documented JSON schema.');
 }
 
+export function finalContent(text) {
+  if (typeof text !== 'string') return '';
+  return text.replace(/<think\b[^>]*>[\s\S]*?<\/think\s*>/gi, '').replace(/<think\b[^>]*>[\s\S]*$/gi, '').trim();
+}
+
 export function parseBundle(text) {
   if (typeof text !== 'string') throw new Error('Expected a JSON text response from the provider.');
-  const raw = jsonObject(text.replace(/```(?:json)?/gi, ''));
+  const raw = jsonObject(finalContent(text).replace(/```(?:json)?/gi, ''));
   if (!Object.keys(BUNDLE_SCHEMA).some(key => Object.hasOwn(raw, key) && raw[key] && typeof raw[key] === 'object')) {
     throw new Error('Unusable content bundle: no recognized sections (pdp, ads, shorts, thumbnails, listingCheck).');
   }
@@ -134,7 +139,7 @@ export async function callLLM({ provider = 'openai', apiKey = '', model, baseUrl
       url = `${base.href.replace(/\/$/, '')}/chat/completions`;
       headers.Authorization = `Bearer ${apiKey}`;
       body = { model, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] };
-      if (provider === 'nebius') Object.assign(body, { max_tokens: maxTokens || 12000, temperature: 0.2 });
+      if (provider === 'nebius') Object.assign(body, { max_tokens: maxTokens || 4500, temperature: 0.2, response_format: { type: 'json_object' }, ...(model.toLowerCase().includes('nemotron') ? { chat_template_kwargs: { enable_thinking: false } } : {}) });
     } else if (provider === 'anthropic') {
       url = 'https://api.anthropic.com/v1/messages';
       Object.assign(headers, { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' });
@@ -156,9 +161,9 @@ export async function callLLM({ provider = 'openai', apiKey = '', model, baseUrl
       try { data = JSON.parse(text); } catch { data = { error: { message: text.slice(0, 400) || 'Empty response' } }; }
     } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); }
     if (!response.ok) throw new Error(`${provider} HTTP ${response.status}: ${data.error?.message || data.message || 'Request failed'}`);
-    const output = ['openai', 'nebius'].includes(provider) ? data.choices?.[0]?.message?.content
+    const output = finalContent(['openai', 'nebius'].includes(provider) ? data.choices?.[0]?.message?.content
       : provider === 'anthropic' ? list(data.content).filter(b => b.type === 'text').map(b => b.text).join('\n')
-        : list(data.candidates?.[0]?.content?.parts).map(b => b.text || '').join('\n');
+        : list(data.candidates?.[0]?.content?.parts).map(b => b.text || '').join('\n'));
     if (!str(output)) throw new Error(`${provider} returned no text. Check the model, token limits or provider safety response.`);
     if (data.choices?.[0]?.finish_reason === 'length') throw new Error('Model output was truncated. Reduce input size or raise the token budget.');
     return detailed ? { text: output, usage: data.usage || null, model: data.model || model } : output;

@@ -1,24 +1,31 @@
 {
   "baseURL": "https://tryon-listing.vercel.app",
   "viewport": "1920x1080",
-  "mobile": "390x844",
-  "mode": "demo",
-  "checks": [
-    "consent gate",
-    "three-model generation",
-    "session usage",
-    "product page generation",
-    "shopper try-on",
-    "content download",
-    "upload invalidation",
-    "photo clearing",
-    "escaped product text",
-    "mobile overflow",
-    "no page errors",
-    "no failed requests",
-    "mocked live photo consent",
-    "mocked live deletion retry and clear authorization"
+  "mode": "live",
+  "liveProviderTested": true,
+  "source": "Owned original SVG artwork rasterized to PNG; no real person",
+  "vtoAttempts": 1,
+  "providerDeleted": true,
+  "vtoWorked": true,
+  "vtoStatus": "Collection ready. Completed tasks were downloaded; see any pending deletion notice below.",
+  "publishedUnits": "2",
+  "copyMode": "live",
+  "copyNotice": "Live LLM copy · check every claim · seller review required",
+  "usage": [
+    {
+      "completion_tokens": 1100,
+      "prompt_tokens": 597,
+      "total_tokens": 1697,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": null
+      },
+      "prompt_tokens_details": null,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 597
+    }
   ],
-  "result": "pass",
-  "liveProviderTested": false
+  "errors": []
 }
