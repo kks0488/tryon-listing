@@ -166,4 +166,3 @@ export async function callLLM({ provider = 'openai', apiKey = '', model, baseUrl
     throw new Error(redact(error.name === 'AbortError' ? `${provider} request timed out or was cancelled (${timeoutMs / 1000}s request limit).` : error.message || 'Provider request failed.'));
   }
 }
-
