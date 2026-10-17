@@ -86,9 +86,9 @@ Tests use Node’s built-in runner and mocked official response shapes. They cov
 Real browser captures are recorded **on pilot**, never on the low-memory Mac. Reuse its existing Playwright and Chromium (or install Playwright only on pilot):
 
 ```sh
-# On pilot, with a temporary app server already running on port 3087:
-PLAYWRIGHT_MODULE=/home/pilot/workspace/hackathons/qloo/node_modules/playwright/index.mjs \
-CHROMIUM_EXECUTABLE=/home/pilot/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome \
+# With a temporary app server already running on port 3087:
+PLAYWRIGHT_MODULE=/path/to/node_modules/playwright/index.mjs \
+CHROMIUM_EXECUTABLE=/path/to/chromium/chrome \
 BASE_URL=http://127.0.0.1:3087 npm run capture
 ```
 
