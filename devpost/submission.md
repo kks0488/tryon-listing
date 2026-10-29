@@ -52,7 +52,9 @@ The app is plain HTML, CSS and JavaScript in the browser and one Node.js API fun
 
 **Testing:** 17 Node tests (`node --test`) run against mocked responses shaped like the official schemas: file validation, signed upload, task creation and polling, download before deletion, expired or tampered tokens, access protection, pricing pagination, and demo and live copy. GitHub Actions runs them on every push. A Playwright script drives the real app in headless Chromium for browser checks and screenshots.
 
-On October 16, 2026 we ran one real cloth-v4 task and one real copy call against the production deployment. The inputs were our own illustrated model and garment, rasterized to PNG, not a real person. YouCam returned a new image, the server downloaded it and the task deletion was confirmed, and the account balance went down by 2 units. The copy call used 597 prompt and 1,100 completion tokens. Those captures are in `media/` and appear in the video, labeled with the date.
+On October 16, 2026 we ran one real cloth-v4 task and one real copy call against the production deployment. The inputs were our own illustrated model and garment, rasterized to PNG, not a real person. YouCam returned a new image, the server downloaded it and the task deletion was confirmed, and the account balance went down by 2 units. The copy call used 597 prompt and 1,100 completion tokens. Those captures are in `media/`; the live copy from that check appears in the video, labeled with the date.
+
+On October 30, 2026 we ran one more real cloth-v4 task (`garment_category: upper_body`) with photographic-looking inputs: a plain gray crewneck sweatshirt laid flat and a full-length model photo. Both input images were generated for this demo. There is no real person and no logo in them. The task was deleted after download. YouCam replaced the model's white T-shirt with the sweatshirt and kept her face, pose, jeans and shoes. The inputs and the unedited result are in `devpost/live/`, and the video shows them side by side, labeled with the date.
 
 ## Challenges we ran into
 
@@ -63,7 +65,7 @@ On October 16, 2026 we ran one real cloth-v4 task and one real copy call against
 
 ## Accomplishments that we're proud of
 
-- A complete cloth-v4 lifecycle, including deletion, verified once in production with our own placeholder images.
+- A complete cloth-v4 lifecycle, including deletion, verified in production on October 16 with our own placeholder art, then a second real cloth-v4 task on October 30 with photographic-looking generated inputs.
 - The seller, shopper and content flows work end to end in demo mode with no keys, and the same code switches to live mode when keys are set.
 - Fit is never inferred. The product page, FAQ, export and prompts all say that try-on is a visual preview, and missing facts stay visible as `[needs info]`.
 - No runtime dependencies, no database, no analytics, and 17 passing tests in CI.
@@ -71,7 +73,7 @@ On October 16, 2026 we ran one real cloth-v4 task and one real copy call against
 ## What we learned
 
 - The cloth-v4 flow is simple to call but has a real lifecycle: allocate files, upload, run, poll, download, delete. Most of our work went into the parts after "it returned an image".
-- Placeholder art is enough to verify an integration, but not image quality. Our Oct 16 result even shows a faint trace of the label printed on our illustrated input. Photographic quality needs real garment photos and consenting models.
+- Placeholder art is enough to verify an integration, but not image quality. A flat-lay garment and a full-length photo with one standing person gave a much more useful result. We have still not tested real seller photos, which come with wrinkles, hangers and mixed lighting.
 - A prompt that forbids fit claims is not a guarantee. In the same live check, the generated description still said the shirt "offers a relaxed fit that works for various body types", a claim the seller had not made. That is why the seller review notice stays on every screen and in the export.
 
 ## What's next for Try-On Listing
@@ -96,10 +98,11 @@ On October 16, 2026 we ran one real cloth-v4 task and one real copy call against
 
 ## Updated during the submission period
 
-The whole project was built inside the submission period (September 29 to November 2, 2026). The public repository was created on October 16, 2026. Its git history starts with `e188935` on October 16, 2026 (seller studio and YouCam VTO integration), followed by `5db790e` (formatting of the reused core) and `609c389` (live YouCam and copy flows verified in production) on the same day, and `598a1eb` on October 17, 2026 (path cleanup). This `devpost/` folder was added on October 30, 2026. The only reused code is our own MIT commerce content core, copied into `src/commerce.js`; its repository was also created on October 16, 2026. No code or media from before September 29, 2026 is included.
+The whole project was built inside the submission period (September 29 to November 2, 2026). The public repository was created on October 16, 2026. Its git history starts with `e188935` on October 16, 2026 (seller studio and YouCam VTO integration), followed by `5db790e` (formatting of the reused core) and `609c389` (live YouCam and copy flows verified in production) on the same day, and `598a1eb` on October 17, 2026 (path cleanup). This `devpost/` folder, including the October 30 live cloth-v4 run (`5560277`), was added on October 30, 2026. The only reused code is our own MIT commerce content core, copied into `src/commerce.js`; its repository was also created on October 16, 2026. No code or media from before September 29, 2026 is included.
 
 ## Files in this folder
 
 - `demo.mp4`: the demo video for YouTube (1920 x 1080, H.264, silent audio track, burned-in English captions)
 - `thumbnail.png`: 1280 x 720 video and project thumbnail
-- `gallery-1-production-studio.png` to `gallery-5-live-content-kit.png`: project gallery images
+- `gallery-1-production-studio.png` to `gallery-5-live-content-kit.png`: project gallery images (gallery 2 is the Oct 30 live result: garment, model and try-on side by side)
+- `live/`: the Oct 30 cloth-v4 inputs (generated images) and the unedited result
