@@ -44,7 +44,7 @@ The app is plain HTML, CSS and JavaScript in the browser and one Node.js API fun
 
 **YouCam unit pricing:** `GET /s2s/v2.0/credit/feature-cost?page_size=20`, following `starting_token` pages, finds the cloth-v4 SKU and computes units per result as `amount / proc_unit`. This runs separately from task creation so a slow pricing call cannot delay a paid task. Unknown pricing stays shown as unknown.
 
-**How results flow into the product page:** each finished image is added to the collection grid with a label (`YOUCAM TRY-ON` in live mode, `SIMULATED · ILLUSTRATION` in demo mode). The first image becomes the hero photo of the shopper product page. The shopper's own-photo try-on replaces that hero image for the shopper's session only.
+**How results flow into the product page:** each finished image is added to the collection grid with a label that says whether it is a YouCam try-on (live mode) or a simulated illustration (demo mode). The first image becomes the hero photo of the shopper product page. The shopper's own-photo try-on replaces that hero image for the shopper's session only.
 
 **Product copy:** `src/listing.js` sends the product name and confirmed facts, plus a list of forbidden claims (no fit, measurement, fabric, care or policy claims inferred from try-on images), to an OpenAI-compatible endpoint. The default is Nebius Token Factory with `nvidia/Nemotron-3_5-Lightning`, JSON mode, thinking disabled, 4,500 output tokens and a 45-second timeout. The prompt and parser come from our MIT commerce content core (`src/commerce.js`). Empty, reasoning-only, truncated or invalid answers fall back to fixed demo copy with a visible notice, so the export never claims live copy it did not get.
 
@@ -54,7 +54,7 @@ The app is plain HTML, CSS and JavaScript in the browser and one Node.js API fun
 
 On October 16, 2026 we ran one real cloth-v4 task and one real copy call against the production deployment. The inputs were our own illustrated model and garment, rasterized to PNG, not a real person. YouCam returned a new image, the server downloaded it and the task deletion was confirmed, and the account balance went down by 2 units. The copy call used 597 prompt and 1,100 completion tokens. Those captures are in `media/`; the live copy from that check appears in the video, labeled with the date.
 
-On October 30, 2026 we ran one more real cloth-v4 task (`garment_category: upper_body`) with photographic-looking inputs: a plain gray crewneck sweatshirt laid flat and a full-length model photo. Both input images were generated for this demo. There is no real person and no logo in them. The task was deleted after download. YouCam replaced the model's white T-shirt with the sweatshirt and kept her face, pose, jeans and shoes. The inputs and the unedited result are in `devpost/live/`, and the video shows them side by side, labeled with the date.
+On October 30, 2026 we ran one more real cloth-v4 task (`garment_category: upper_body`) with photographic-looking inputs: a plain grey crewneck sweatshirt laid flat and a full-length model photo. Both input images were generated for this demo. There is no real person and no logo in them. The task was deleted after download. YouCam replaced the model's white T-shirt with the sweatshirt and kept her face, pose, jeans and shoes. The inputs and the unedited result are in `devpost/live/`, and the video shows them side by side, labeled with the date.
 
 ## Challenges we ran into
 

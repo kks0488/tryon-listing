@@ -92,7 +92,7 @@ CHROMIUM_EXECUTABLE=/path/to/chromium/chrome \
 BASE_URL=http://127.0.0.1:3087 npm run capture
 ```
 
-Verified: **17 Node tests pass**. The production app passed the real live seller VTO and listing flow from Playwright on pilot with no runtime errors. Existing `media/01`–`05` screenshots were replaced at exactly 1920 × 1080; `06-mobile.png` shows the production mobile view. `04-shopper-consent.png` shows the live consent screen, not a second VTO run. `media/capture-results.json` records provider deletion, modes and token usage. For repeat captures, set `LIVE_CAPTURE=1`, `BASE_URL` to production and pipe the studio access token into the existing capture script over stdin. It performs exactly one VTO task and one listing call; it never records the password field. No dev servers remain. These are inputs for the shared Remotion kit, not the final video.
+Verified: **17 Node tests pass**. The production app passed the real live seller VTO and listing flow from Playwright on pilot with no runtime errors. Existing `media/01` to `05` screenshots were replaced at exactly 1920 × 1080; `06-mobile.png` shows the production mobile view. `04-shopper-consent.png` shows the live consent screen, not a second VTO run. `media/capture-results.json` records provider deletion, modes and token usage. For repeat captures, set `LIVE_CAPTURE=1`, `BASE_URL` to production and pipe the studio access token into the existing capture script over stdin. It performs exactly one VTO task and one listing call; it never records the password field. No dev servers remain. These are inputs for the shared Remotion kit, not the final video.
 
 ## Privacy and practical limits
 
@@ -106,10 +106,10 @@ Virtual try-on predicts appearance, not physical size or fit. No inferred measur
 
 Read with curl: [overview](https://youcam-api-skin-ai-ecommerce.devpost.com), [rules](https://youcam-api-skin-ai-ecommerce.devpost.com/rules), [resources](https://youcam-api-skin-ai-ecommerce.devpost.com/resources).
 
-- Deadline: **November 2, 2026, 11:45 a.m. Eastern**. Build must be new or substantially improved during the September 29–November 2 submission period.
+- Deadline: **November 2, 2026, 11:45 a.m. Eastern**. Build must be new or substantially improved during the September 29 to November 2 submission period.
 - Functional prototype using at least one YouCam API, with clear consumer or retail value. The real cloth-v4 integration was verified with owned neutral placeholders; photographic quality still needs owner review.
 - English project description explaining features and value; source/assets/run instructions and license; freely accessible working demo/test access for judges.
-- **Video required: public 1–3 minute end-to-end demo**, showing the app running and explaining YouCam use. Rules name YouTube (preferred) or Vimeo. Screenshots in this repository are not a substitute. The owner must provide/upload the final video URL.
+- **Video required: public 1 to 3 minute end-to-end demo**, showing the app running and explaining YouCam use. Rules name YouTube (preferred) or Vimeo. Screenshots in this repository are not a substitute. The owner must provide/upload the final video URL.
 - Judging: technical implementation, design, impact and quality of idea. Winners must participate in an exit interview.
 - Resources describe a developer-account and manual redeem-code process for free units. The owner must create/login to their account and claim credits. No service registration or Devpost submission was performed.
 
@@ -119,4 +119,4 @@ Built October 16, 2026: the Try-On Listing seller studio, original garment/model
 
 ## License
 
-[MIT](LICENSE) — Copyright (c) 2026 Kyoungsoo Kim.
+[MIT](LICENSE). Copyright (c) 2026 Kyoungsoo Kim.
